@@ -1,0 +1,78 @@
+/** NORMALIZE **/
+.row{
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+:root {
+    --main-button-color: #F2DC51;
+    --title-font: 'Playfair Display';
+    --text-font: 'Poppins';
+}
+body{
+    font-family: var(--title-font),'sans-serif';
+}
+p{
+    font-family: var(--text-font);
+    color: #707070;
+    font-size: 15px;
+    text-align: justify;
+}
+.form-control{
+    font-family: var(--text-font);
+    font-size: 15px;
+}
+
+
+/**UTILITIES**/
+.linea-amarilla{
+    background: var(--main-button-color);
+    width: 100%;
+    height: 2px;
+}
+
+/** LAYOUT **/
+.graph-container{
+    background: black;
+    position: relative;
+    min-height: 100vh;
+}
+/**COMPONENTS**/
+.searchbar{
+    background: #343434;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 15px;
+}
+
+.searchbar__input{
+    color: white !important;
+    background: #5B5B5B;
+    border-radius: 200px;
+    border: none !important;
+}
+
+.searchbar__input:focus{
+    color: white !important;
+    background: #7C7C7C !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.searchbar__input::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: white;
+    opacity: 1; /* Firefox */
+}
+
+.searchbar__input:-ms-input-placeholder { /* Internet Explorer 10-11 */
+    color: white;
+}
+
+.searchbar__input::-ms-input-placeholder { /* Microsoft Edge */
+    color: white;
+}
+.sidebar{
+    height: 100vh;
+    overflow-y: scroll;
+}

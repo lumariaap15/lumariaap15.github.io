@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Content cube</title>
+    <link href="https://fonts.googleapis.com/css?family=Playfair+Display:400,700|Poppins:400,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        #c{
+            height: 100%;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+<div>
+    <div class="row">
+        <div class="col graph-container">
+            <canvas id="c"></canvas>
+            <div class="row align-items-center searchbar">
+                <input placeholder="¿Looking for a specific subject? Type here" type="text" class="form-control searchbar__input">
+            </div>
+        </div>
+        <div class="col col-3 d-none d-md-block p-4 sidebar">
+            <h3 class="text-center">¿What is a Biblical Worldview?</h3>
+            <div class="linea-amarilla my-3"></div>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras facilisis, enim eu <a href="#">tempor vulputate</a>, tortor orci accumsan lacus, eget interdum velit mauris vitae dui.</p>
+            <p>Donec imperdiet, libero at pulvinar porttitor, libero orci ornare dolor, sit amet sagittis est urna et diam. Pellentesque vehicula vestibulum tellus facilisis commodo. Curabitur et aliquam massa, accumsan egestas leo.</p>
+            <p>Duis mattis ultrices libero a bibendum. Aliquam eros lectus, <a href="#">egestas sed pharetra</a> et, convallis ac risus. Nam tincidunt sem eu lorem feugiat, auctor suscipit elit ultricies. Nunc non laoreet magna.</p>
+            <p>Phasellus ullamcorper tempus risus vel molestie. <a href="#">Class aptent</a> taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Suspendisse neque felis, cursus et semper eget, posuere eget lacus. Vivamus faucibus commodo eros. In at augue eu metus tempus molestie at sed dolor. Praesent sollicitudin, sapien eget pretium vehicula, nunc mi vulputate libero, et blandit sem ex in nunc.</p>
+            <p> Cras congue placerat quam non maximus. Vivamus vel lorem a mi finibus scelerisque suscipit quis dui.</p>
+        </div>
+    </div>
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/2.1.2/TweenMax.min.js"></script>
+<script type="module">
+    // Three.js - Background Cubemap
+    // from https://threejsfundamentals.org/threejs/threejs-background-equirectangularmap.html
+    import * as THREE from 'https://threejsfundamentals.org/threejs/resources/threejs/r115/build/three.module.js';
+    import {OrbitControls} from 'https://threejsfundamentals.org/threejs/resources/threejs/r115/examples/jsm/controls/OrbitControls.js';
+
+    var timeline = new TimelineMax();
+
+    function getRandom() {
+        // source: https://stackoverflow.com/questions/13455042/random-number-between-negative-and-positive-value
+        var num = Math.floor(Math.random()*200) + 1; // this will get a number between 1 and x;
+        num *= Math.floor(Math.random()*2) === 1 ? 1 : -1; // this will add minus sign in 50% of cases
+        return num;
+    }
+
+    /**
+     * FONT SETTINGS
+     **/
+    var cubeMat = new THREE.MeshLambertMaterial({color: "#fff"})
+    function createText(t, pos, customScene) {
+        var loader = new THREE.FontLoader();
+        loader.load('open_sans_bold.json', function (font) {
+            let textGeo = new THREE.TextGeometry( t, {
+                font: font,
+                size: 0.35,
+                height: 0.03,
+                curveSegments:1,
+                weight: "bold",
+                border:"#000"
+            });
+            var text = new THREE.Mesh(textGeo, cubeMat);
+            text.position.z = pos[2];
+            text.position.y = pos[1];
+            text.position.x = pos[0];
+            customScene.add(text)
+        });
+    }
+
+
+    //get canvas
+    const canvas = document.querySelector('#c');
+    //init renderer
+    const renderer = new THREE.WebGLRenderer({canvas});
+    var textureLoader = new THREE.TextureLoader();
+    renderer.autoClearColor = false;
+
+    /** INIT CAMERA **/
+    const fov = 75;
+    const aspect = 2;  // the canvas default
+    const near = 0.1;
+    const far = 1000;
+    var camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+    camera.position.z = 500;
+
+
+    /** ENABLE CONTROLS **/
+    const controls = new OrbitControls(camera, canvas);
+    controls.target.set(0, 0, 0);
+    controls.update();
+    /** END CONTROLS **/
+
+    /** INIT SCENE **/
+    const scene = new THREE.Scene();
+
+
+    /** INIT LIGHT **/
+    const color = 0xFFFFFF;
+    const intensity = 1;
+    const light = new THREE.DirectionalLight(color, intensity);
+    light.position.set(0, 0, 10);
+
+    const light2 = new THREE.PointLight(color, 2);
+    scene.add(light);
+    //scene.add(light2);
+    /** END INIT LIGHT **/
+
+
+    /** BIG SPHERE **/
+    /*
+    const loader = new THREE.TextureLoader();
+    var BigGeometry = new THREE.SphereGeometry(500, 500, 20);
+    var BigMaterial = new THREE.MeshBasicMaterial({map: loader.load('img/galaxy9.png'), side: THREE.BackSide});
+    var BigSphere = new THREE.Mesh(BigGeometry, BigMaterial);
+    scene.add(BigSphere);
+    */
+
+
+    /**
+     * stars
+     */
+    var stars = [];
+    for (let i = 0; i < 3000; i++) {
+        let geometry = new THREE.CircleGeometry( .3, 20 );
+        let material = new THREE.MeshBasicMaterial( { color: "#fff", opacity:.6 } );
+        let star = new THREE.Mesh( geometry, material );
+        star.position.set( getRandom(), getRandom(), getRandom() );
+        star.material.side = THREE.DoubleSide;
+        stars.push( star );
+        scene.add( star );
+    }
+    /**
+     * stars end
+     */
+
+
+
+    const radius = 1;
+    const widthSegments = 20;
+    const heightSegments = 20;
+    const sphereGeometry = new THREE.SphereBufferGeometry(
+        radius, widthSegments, heightSegments);
+
+    const sunContainer = new THREE.Object3D();
+    scene.add(sunContainer);
+    const sunMaterial = new THREE.MeshPhongMaterial({map:textureLoader.load('img/sun.jpg'),emissive: 0xFFFF00, emissiveIntensity:.1});
+    const sunMesh = new THREE.Mesh(sphereGeometry, sunMaterial);
+    //sunMesh.scale.set(5, 5, 5);  // make the sun large
+    sunContainer.add(sunMesh);
+    createText('What is a',[-0.9,0.2,1], sunContainer);
+    createText('Worldview?',[-1.2,-0.4,1], sunContainer);
+
+
+    /**
+     CHANGE COLOR OBJECT ON CLICK
+     all this code is necessary if we want to identify
+     the object on the canvas that was clicked
+     * */
+    var raycaster = new THREE.Raycaster();
+    var mouse = new THREE.Vector2();
+    function onClick(e) {
+        e.preventDefault();
+        mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = - (e.clientY / window.innerHeight) * 2 + 1;
+
+        raycaster.setFromCamera(mouse, camera)
+
+        var intersects = raycaster.intersectObjects(scene.children, true);
+        for(var i = 0; i < intersects.length; i++){
+            //here is where we change the color
+            let obj = intersects[i].object;
+
+            if(obj.geometry.type === "SphereBufferGeometry" || obj.geometry.type === "SphereGeometry") {
+                console.log(obj)
+                stopRotations()
+                let finalPositionX = obj.position.x * 3;
+                let finalPositionY = obj.position.y * 3;
+                timeline.to(camera.position, .5, {z:15, ease: Expo.easeOut})
+                timeline.to(circle.scale, .5, {x: 3, y: 3, z:3, ease: Expo.easeOut})
+                timeline.to(camera.position, 1, {x: finalPositionX, y: finalPositionY, z:9, ease: Expo.easeOut})
+                //timeline.to(camera.position, 1, {x: obj.position.x, y: obj.position.y, z:3, ease: Expo.easeOut})
+                //timeline.to(camera.position, 1, {x: getObjectCanvas(obj.uuid).position.x, y: getObjectCanvas(obj.uuid).position.y,z:5, ease: Expo.easeOut})
+            }
+        }
+    }
+
+    function onMouseOver(e) {
+        e.preventDefault();
+        mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = - (e.clientY / window.innerHeight) * 2 + 1;
+
+        raycaster.setFromCamera(mouse, camera)
+
+        var intersects = raycaster.intersectObjects(scene.children, true);
+        if(intersects.length !== 0) {
+            for (var i = 0; i < intersects.length; i++) {
+                //here is where we change the color
+                let obj = intersects[i].object;
+                if (obj.geometry.type === "SphereBufferGeometry" || obj.geometry.type === "SphereGeometry") {
+                    //stopRotations();
+                    document.body.style.cursor = "pointer";
+                    //console.log(obj)
+                    //timeline.to(obj.children[0].position, .5, {z:2, ease: Expo.easeOut})
+                } else {
+                    document.body.style.cursor = "auto";
+                    //startRotations();
+                }
+            }
+        }else{
+            //startRotations();
+            document.body.style.cursor = "auto";
+        }
+    }
+
+
+
+    function resizeRendererToDisplaySize(renderer) {
+        const canvas = renderer.domElement;
+        const width = canvas.clientWidth;
+        const height = canvas.clientHeight;
+        const needResize = canvas.width !== width || canvas.height !== height;
+        if (needResize) {
+            renderer.setSize(width, height, false);
+        }
+        return needResize;
+    }
+
+    //var lightness = 0;
+    function render(time) {
+        time *= 0.0001;
+
+        if (resizeRendererToDisplaySize(renderer)) {
+            const canvas = renderer.domElement;
+            camera.aspect = canvas.clientWidth / canvas.clientHeight;
+            camera.updateProjectionMatrix();
+        }
+
+        renderer.render(scene, camera);
+        requestAnimationFrame(render);
+    }
+
+    function acercarCamera(zPos) {
+        timeline.to(camera.position, 3, {z: zPos, ease: Expo.easeOut})
+    }
+
+    acercarCamera(5)
+
+    render();
+
+    window.addEventListener('dblclick',onClick)
+    window.addEventListener('mousemove',onMouseOver)
+
+
+
+
+
+</script>
+</body>
+</html>
